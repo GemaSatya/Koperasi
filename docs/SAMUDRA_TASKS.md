@@ -554,7 +554,7 @@ Verifikasi manual memerlukan MySQL dan izin menjalankan server:
 - [ ] Branch: `feat/pinjaman-samudra` dengan commit per langkah, atau branch terpisah per langkah.
 - [x] Body `POST /api/pinjaman/{id}/pelunasan`: `{"tanggal": "YYYY-MM-DD"}` (bukan query).
 - [x] `tanggal` kosong pada endpoint hitung pelunasan: default hari ini.
-- [ ] Respons batas pinjaman: `{"batas_maksimal": ..., "pinjaman_aktif": ...}`.
+- [x] Respons batas pinjaman: `{"batas_maksimal": ..., "pinjaman_aktif": ...}`.
 - [x] `SisaDenda` di kartu pinjaman: diset `0`.
 
 ## Checklist progres
@@ -565,6 +565,6 @@ Verifikasi manual memerlukan MySQL dan izin menjalankan server:
 - [x] Langkah 3: pencairan dan jadwal angsuran
 - [x] Langkah 4: pelunasan dipercepat
 - [x] Langkah 5: kartu pinjaman
-- [ ] Langkah 6: wiring `main.go`
-- [ ] Verifikasi statis
+- [x] Langkah 6: wiring `main.go`
+- [x] Verifikasi statis
 - [ ] Verifikasi manual dengan MySQL
