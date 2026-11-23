@@ -1,6 +1,6 @@
 # Rencana Pengembangan Samudra
 
-Status: rencana kerja; Langkah 1 sudah diimplementasikan.
+Status: rencana kerja; Langkah 1 dan 2 sudah diimplementasikan.
 
 File ini menjadi acuan untuk bagian Samudra. Scope diambil dari:
 
@@ -545,7 +545,7 @@ Verifikasi manual memerlukan MySQL dan izin menjalankan server:
 
 - [ ] Langkah 0: baseline
 - [x] Langkah 1: `HitungJadwal` dan tes
-- [ ] Langkah 2: pengajuan pinjaman dan batas pinjaman
+- [x] Langkah 2: pengajuan pinjaman dan batas pinjaman
 - [ ] Langkah 3: pencairan dan jadwal angsuran
 - [ ] Langkah 4: pelunasan dipercepat
 - [ ] Langkah 5: kartu pinjaman

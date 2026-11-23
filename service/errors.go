@@ -15,6 +15,10 @@ var (
 	ErrSaldoTidakCukup   = errors.New("saldo simpanan sukarela tidak cukup")
 	ErrSimpananPokokAda  = errors.New("simpanan pokok sudah pernah dibayar")
 
+	ErrInputPinjaman          = errors.New("data pinjaman tidak valid")
+	ErrPinjamanTidakDitemukan = errors.New("pinjaman tidak ditemukan")
+	ErrTenorTidakValid        = errors.New("tenor harus antara 1 dan 60 bulan")
+	ErrJumlahTidakValid       = errors.New("jumlah pinjaman harus lebih dari 0")
 	ErrPinjamanAktifAda       = errors.New("anggota masih memiliki pinjaman aktif")
 	ErrMelebihiBatas          = errors.New("jumlah pinjaman melebihi batas maksimal")
 	ErrStatusPinjaman         = errors.New("status pinjaman tidak sesuai untuk proses ini")
