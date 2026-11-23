@@ -553,7 +553,7 @@ Verifikasi manual dilakukan dengan MariaDB 13.0.2 pada database isolasi `pemweb_
 
 ## Keputusan yang perlu dikonfirmasi
 
-- [ ] Branch: `feat/pinjaman-samudra` dengan commit per langkah, atau branch terpisah per langkah.
+- [x] Branch: `feat/pinjaman-samudra` dengan commit per langkah; tujuh commit dipindah ke branch ini dan `main` dikembalikan ke `14fb9da`.
 - [x] Body `POST /api/pinjaman/{id}/pelunasan`: `{"tanggal": "YYYY-MM-DD"}` (bukan query).
 - [x] `tanggal` kosong pada endpoint hitung pelunasan: default hari ini.
 - [x] Respons batas pinjaman: `{"batas_maksimal": ..., "pinjaman_aktif": ...}`.
