@@ -479,6 +479,13 @@ Selesai jika:
 - pembayaran dan pelunasan muncul dengan benar
 - sisa pokok cocok dengan hitungan manual
 
+Catatan implementasi:
+
+- `SisaDenda` diset `0` pada setiap jadwal; denda berjalan tetap milik modul Brian.
+- `SisaPokok` dihitung dari `jadwal.pokok - pokok_dibayar` per angsuran, lalu dijumlahkan.
+- Jika data pelunasan ada, `SisaPokok` kartu diset `0` karena pelunasan menutup pinjaman tanpa membuat baris `pembayaran`.
+- `PinjamanRepository.GetDetailByID` dan `PelunasanRepository.GetByIDPinjaman` dipakai ulang lewat interface kecil di service.
+
 ## Langkah 6: wiring `main.go`
 
 File:
@@ -548,7 +555,7 @@ Verifikasi manual memerlukan MySQL dan izin menjalankan server:
 - [x] Body `POST /api/pinjaman/{id}/pelunasan`: `{"tanggal": "YYYY-MM-DD"}` (bukan query).
 - [x] `tanggal` kosong pada endpoint hitung pelunasan: default hari ini.
 - [ ] Respons batas pinjaman: `{"batas_maksimal": ..., "pinjaman_aktif": ...}`.
-- [ ] `SisaDenda` di kartu pinjaman: `0` atau tidak dikirim.
+- [x] `SisaDenda` di kartu pinjaman: diset `0`.
 
 ## Checklist progres
 
@@ -557,7 +564,7 @@ Verifikasi manual memerlukan MySQL dan izin menjalankan server:
 - [x] Langkah 2: pengajuan pinjaman dan batas pinjaman
 - [x] Langkah 3: pencairan dan jadwal angsuran
 - [x] Langkah 4: pelunasan dipercepat
-- [ ] Langkah 5: kartu pinjaman
+- [x] Langkah 5: kartu pinjaman
 - [ ] Langkah 6: wiring `main.go`
 - [ ] Verifikasi statis
 - [ ] Verifikasi manual dengan MySQL
