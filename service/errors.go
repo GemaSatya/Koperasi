@@ -19,6 +19,7 @@ var (
 	ErrPinjamanTidakDitemukan = errors.New("pinjaman tidak ditemukan")
 	ErrTenorTidakValid        = errors.New("tenor harus antara 1 dan 60 bulan")
 	ErrJumlahTidakValid       = errors.New("jumlah pinjaman harus lebih dari 0")
+	ErrJadwalTidakValid       = errors.New("jadwal angsuran tidak valid")
 	ErrPinjamanAktifAda       = errors.New("anggota masih memiliki pinjaman aktif")
 	ErrMelebihiBatas          = errors.New("jumlah pinjaman melebihi batas maksimal")
 	ErrStatusPinjaman         = errors.New("status pinjaman tidak sesuai untuk proses ini")

@@ -1,6 +1,6 @@
 # Rencana Pengembangan Samudra
 
-Status: rencana kerja; Langkah 1 dan 2 sudah diimplementasikan.
+Status: rencana kerja; Langkah 1, 2, dan 3 sudah diimplementasikan.
 
 File ini menjadi acuan untuk bagian Samudra. Scope diambil dari:
 
@@ -314,6 +314,8 @@ Urutan dalam satu `models.RunInTx`:
 
 `BuatJadwalAngsuran` memakai `HitungJadwal`, lalu `InsertBatch`.
 
+`CairkanPinjaman` mengembalikan `(jumlahJadwal int, error)` agar handler bisa mengisi `jumlah_jadwal` tanpa query tambahan.
+
 Jasa yang dipakai harus `Pinjaman.JasaPerBulan` yang tersimpan saat pengajuan. Jangan hitung ulang dari config saat pencairan.
 
 Respons sukses memakai `200`:
@@ -546,7 +548,7 @@ Verifikasi manual memerlukan MySQL dan izin menjalankan server:
 - [ ] Langkah 0: baseline
 - [x] Langkah 1: `HitungJadwal` dan tes
 - [x] Langkah 2: pengajuan pinjaman dan batas pinjaman
-- [ ] Langkah 3: pencairan dan jadwal angsuran
+- [x] Langkah 3: pencairan dan jadwal angsuran
 - [ ] Langkah 4: pelunasan dipercepat
 - [ ] Langkah 5: kartu pinjaman
 - [ ] Langkah 6: wiring `main.go`

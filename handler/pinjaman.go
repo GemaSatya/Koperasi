@@ -12,11 +12,18 @@ import (
 )
 
 type PinjamanHandler struct {
-	pinjamanService *service.PinjamanService
+	pinjamanService  *service.PinjamanService
+	pencairanService *service.PencairanService
 }
 
-func NewPinjamanHandler(pinjamanService *service.PinjamanService) *PinjamanHandler {
-	return &PinjamanHandler{pinjamanService: pinjamanService}
+func NewPinjamanHandler(
+	pinjamanService *service.PinjamanService,
+	pencairanService *service.PencairanService,
+) *PinjamanHandler {
+	return &PinjamanHandler{
+		pinjamanService:  pinjamanService,
+		pencairanService: pencairanService,
+	}
 }
 
 func (h *PinjamanHandler) RegisterRoutes(mux *http.ServeMux) {
@@ -24,6 +31,7 @@ func (h *PinjamanHandler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/pinjaman", h.Create)
 	mux.HandleFunc("GET /api/pinjaman", h.List)
 	mux.HandleFunc("GET /api/pinjaman/{id}", h.GetByID)
+	mux.HandleFunc("POST /api/pinjaman/{id}/cairkan", h.Cairkan)
 }
 
 type pinjamanRequest struct {
@@ -31,6 +39,10 @@ type pinjamanRequest struct {
 	TanggalPengajuan string `json:"tanggal_pengajuan"`
 	JumlahPinjaman   int64  `json:"jumlah_pinjaman"`
 	Tenor            int    `json:"tenor"`
+}
+
+type pencairanRequest struct {
+	TanggalCair string `json:"tanggal_cair"`
 }
 
 func (h *PinjamanHandler) BatasPinjaman(w http.ResponseWriter, r *http.Request) {
@@ -140,6 +152,42 @@ func (h *PinjamanHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func (h *PinjamanHandler) Cairkan(w http.ResponseWriter, r *http.Request) {
+	id, err := service.ParsePositiveID(r.PathValue("id"))
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "id pinjaman tidak valid")
+		return
+	}
+
+	var request pencairanRequest
+	if err := decodeJSON(r, &request); err != nil {
+		writeError(w, http.StatusBadRequest, "format request tidak valid")
+		return
+	}
+
+	tanggalCair, err := util.ParseTanggal(request.TanggalCair)
+	if err != nil {
+		writeError(w, http.StatusBadRequest, service.ErrTanggalTidakValid.Error())
+		return
+	}
+
+	jumlahJadwal, err := h.pencairanService.CairkanPinjaman(id, tanggalCair)
+	if err != nil {
+		h.writePinjamanError(w, err)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, successResponse{
+		Success: true,
+		Data: map[string]interface{}{
+			"id_pinjaman":   id,
+			"tanggal_cair":  request.TanggalCair,
+			"jumlah_jadwal": jumlahJadwal,
+		},
+		Message: "pencairan pinjaman berhasil",
+	})
+}
+
 func (h *PinjamanHandler) writePinjamanError(w http.ResponseWriter, err error) {
 	switch {
 	case errors.Is(err, service.ErrInputPinjaman),
@@ -154,7 +202,8 @@ func (h *PinjamanHandler) writePinjamanError(w http.ResponseWriter, err error) {
 	case errors.Is(err, service.ErrAnggotaTidakAktif),
 		errors.Is(err, service.ErrPinjamanAktifAda),
 		errors.Is(err, service.ErrMelebihiBatas),
-		errors.Is(err, service.ErrStatusPinjaman):
+		errors.Is(err, service.ErrStatusPinjaman),
+		errors.Is(err, service.ErrJadwalTidakValid):
 		writeError(w, http.StatusConflict, err.Error())
 	default:
 		writeError(w, http.StatusInternalServerError, "terjadi kesalahan pada server")
