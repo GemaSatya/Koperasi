@@ -107,10 +107,10 @@ Bagian tersulit sesuai `PEMBAGIAN_TUGAS_BACKEND.md` adalah `CairkanPinjaman`, ka
 
 ## Langkah 0: baseline
 
-- [ ] Pastikan working tree bersih.
-- [ ] Pastikan Go lokal bisa membangun modul. `go.mod` saat ini memakai `go 1.27.1`.
-- [ ] Pastikan format response dan kode HTTP sesuai spesifikasi.
-- [ ] Pastikan tidak ada perubahan route modul lain.
+- [x] Pastikan working tree bersih.
+- [x] Pastikan Go lokal bisa membangun modul. `go.mod` saat ini memakai `go 1.27.1`.
+- [x] Pastikan format response dan kode HTTP sesuai spesifikasi.
+- [x] Pastikan tidak ada perubahan route modul lain.
 
 Format response:
 
@@ -549,6 +549,8 @@ Verifikasi manual memerlukan MySQL dan izin menjalankan server:
 10. cek pinjaman dan semua jadwal berstatus `Lunas`
 11. buka kartu pinjaman
 
+Verifikasi manual dilakukan dengan MariaDB 13.0.2 pada database isolasi `pemweb_samudra_test`: pinjaman `600000` dengan tenor 6, pembayaran sebagian `40000`, hitung pelunasan `560000 + 0 + 11200 = 571200`, pelunasan kedua ditolak `409`, pinjaman dan enam jadwal berstatus `Lunas`, kartu pinjaman menampilkan pembayaran dan pelunasan.
+
 ## Keputusan yang perlu dikonfirmasi
 
 - [ ] Branch: `feat/pinjaman-samudra` dengan commit per langkah, atau branch terpisah per langkah.
@@ -559,7 +561,7 @@ Verifikasi manual memerlukan MySQL dan izin menjalankan server:
 
 ## Checklist progres
 
-- [ ] Langkah 0: baseline
+- [x] Langkah 0: baseline
 - [x] Langkah 1: `HitungJadwal` dan tes
 - [x] Langkah 2: pengajuan pinjaman dan batas pinjaman
 - [x] Langkah 3: pencairan dan jadwal angsuran
@@ -567,4 +569,4 @@ Verifikasi manual memerlukan MySQL dan izin menjalankan server:
 - [x] Langkah 5: kartu pinjaman
 - [x] Langkah 6: wiring `main.go`
 - [x] Verifikasi statis
-- [ ] Verifikasi manual dengan MySQL
+- [x] Verifikasi manual dengan MySQL
