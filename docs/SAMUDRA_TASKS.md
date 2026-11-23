@@ -425,6 +425,13 @@ Selesai jika:
 - pelunasan kedua mengembalikan `409`
 - tidak ada logika denda di modul ini
 
+Catatan implementasi:
+
+- `HitungPelunasan` membaca pinjaman tanpa lock; `ProsesPelunasan` membaca ulang dengan `GetByIDForUpdate` di dalam transaksi.
+- `GetByIDPinjaman` memakai `DBTX` agar pengecekan pelunasan kedua ikut terkunci dalam transaksi yang sama.
+- `GetPelunasan` mengembalikan `nil` saat belum ada baris pelunasan.
+- POST memakai body `{"tanggal": "YYYY-MM-DD"}`; GET tanpa `tanggal` memakai tanggal hari ini.
+
 ## Langkah 5: kartu pinjaman
 
 File:
@@ -538,8 +545,8 @@ Verifikasi manual memerlukan MySQL dan izin menjalankan server:
 ## Keputusan yang perlu dikonfirmasi
 
 - [ ] Branch: `feat/pinjaman-samudra` dengan commit per langkah, atau branch terpisah per langkah.
-- [ ] Body `POST /api/pinjaman/{id}/pelunasan`: `{"tanggal": "YYYY-MM-DD"}` atau query `?tanggal=`.
-- [ ] `tanggal` kosong pada endpoint hitung pelunasan: default hari ini atau `400`.
+- [x] Body `POST /api/pinjaman/{id}/pelunasan`: `{"tanggal": "YYYY-MM-DD"}` (bukan query).
+- [x] `tanggal` kosong pada endpoint hitung pelunasan: default hari ini.
 - [ ] Respons batas pinjaman: `{"batas_maksimal": ..., "pinjaman_aktif": ...}`.
 - [ ] `SisaDenda` di kartu pinjaman: `0` atau tidak dikirim.
 
@@ -549,7 +556,7 @@ Verifikasi manual memerlukan MySQL dan izin menjalankan server:
 - [x] Langkah 1: `HitungJadwal` dan tes
 - [x] Langkah 2: pengajuan pinjaman dan batas pinjaman
 - [x] Langkah 3: pencairan dan jadwal angsuran
-- [ ] Langkah 4: pelunasan dipercepat
+- [x] Langkah 4: pelunasan dipercepat
 - [ ] Langkah 5: kartu pinjaman
 - [ ] Langkah 6: wiring `main.go`
 - [ ] Verifikasi statis
