@@ -111,8 +111,6 @@ go vet ./...
 
 ## Fitur yang Sudah Selesai
 
-Bagian Gema yang sudah tersedia:
-
 1. Konfigurasi environment dan koneksi database.
 2. `RunInTx` untuk transaksi database.
 3. Middleware CORS.
@@ -122,6 +120,10 @@ Bagian Gema yang sudah tersedia:
 7. Simpanan dan penarikan sukarela.
 8. Utilitas tanggal, persentase, dan response JSON.
 9. Unit test utilitas tanggal dan persentase.
+10. Pengajuan dan pencairan pinjaman, Pembuatan jadwal angsuran.
+11. Pembayaran angsuran penuh maupun sebagian, perhitungan denda, dan penutupan pinjaman.
+12. Pelunasan dipercepat dengan administrasi.
+13. Seluruh laporan: simpanan, kartu pinjaman, riwayat pembayaran, tunggakan, pendapatan jasa, pendapatan denda.
 
 ## Endpoint yang Sudah Tersedia
 
@@ -303,32 +305,89 @@ func (h *PinjamanHandler) RegisterRoutes(mux *http.ServeMux) {
 
 Setelah itu daftarkan handler di `main.go`.
 
-## Modul yang Belum Dikerjakan
+## Modul Pinjaman, Pembayaran, dan Laporan
 
-Modul berikut menjadi tanggung jawab anggota berikutnya:
+Modul berikut sudah tersedia dan didaftarkan otomatis di `main.go`.
 
-### Samudra
+### Pinjaman dan pencairan
 
-- Pengajuan pinjaman
-- Perhitungan batas pinjaman
-- Pencairan pinjaman
-- Pembuatan jadwal angsuran
-- Pelunasan dipercepat
-- Kartu pinjaman
+```text
+GET    /api/anggota/{id}/batas-pinjaman
+POST   /api/pinjaman
+GET    /api/pinjaman?status=&id_anggota=&page=&limit=
+GET    /api/pinjaman/{id}
+POST   /api/pinjaman/{id}/cairkan
+```
 
-### Brian
+Request pengajuan:
 
-- Pembayaran angsuran
-- Perhitungan denda
-- Pembayaran sebagian
-- Penutupan pinjaman setelah semua angsuran lunas
-- Seluruh laporan:
-  - Laporan simpanan
-  - Kartu pinjaman
-  - Riwayat pembayaran
-  - Daftar tunggakan
-  - Pendapatan jasa
-  - Pendapatan denda
+```json
+{
+  "id_anggota": 1,
+  "jumlah_pinjaman": 6000000,
+  "tenor": 12,
+  "tanggal_pengajuan": "2026-11-10"
+}
+```
+
+Request pencairan:
+
+```json
+{ "tanggal_cair": "2026-11-15" }
+```
+
+Pencairan membuat jadwal angsuran sebanyak `tenor` dalam satu transaksi.
+Sisa pembulatan pokok masuk ke angsuran terakhir.
+
+### Pembayaran angsuran
+
+```text
+GET  /api/pinjaman/{id}/jadwal
+GET  /api/jadwal/{id}/tagihan?tanggal=
+POST /api/jadwal/{id}/bayar
+GET  /api/pinjaman/{id}/pembayaran
+```
+
+Request pembayaran (boleh sebagian):
+
+```json
+{ "tanggal_bayar": "2026-12-20", "nominal": 300000 }
+```
+
+Alokasi uang berurutan: denda, lalu jasa, lalu pokok. Jadwal menjadi `Lunas`
+ketika pokok dan jasa terbayar penuh. Pinjaman otomatis berstatus `Lunas`
+ketika semua jadwal sudah lunas.
+
+Denda dihitung `0,1% per hari` dari sisa pokok ditambah sisa jasa, mulai hari
+setelah jatuh tempo, dan dikurangi denda yang sudah dibayar.
+
+### Pelunasan dipercepat
+
+```text
+GET  /api/pinjaman/{id}/pelunasan/hitung?tanggal=
+POST /api/pinjaman/{id}/pelunasan
+```
+
+Total pelunasan = sisa pokok + jasa bulan berjalan + administrasi 2% dari sisa pokok.
+Pelunasan menutup semua jadwal dan pinjaman, dan tidak bisa dilakukan dua kali.
+
+### Laporan
+
+```text
+GET /api/laporan/simpanan?dari=&sampai=&id_anggota=
+GET /api/laporan/kartu-pinjaman/{id_pinjaman}
+GET /api/laporan/riwayat-pembayaran?dari=&sampai=&id_anggota=
+GET /api/laporan/tunggakan?tanggal=
+GET /api/laporan/pendapatan-jasa?dari=&sampai=
+GET /api/laporan/pendapatan-denda?dari=&sampai=
+```
+
+`dari`, `sampai`, dan `id_anggota` opsional untuk laporan simpanan dan riwayat
+pembayaran. Untuk pendapatan jasa dan denda, `dari` dan `sampai` wajib diisi
+dengan format `YYYY-MM-DD`. `tanggal` pada tunggakan defaultnya hari ini.
+
+Rincian pendapatan dikelompokkan per bulan dengan format `YYYY-MM`.
+Pendapatan jasa mencakup jasa angsuran yang dibayar maupun jasa dari pelunasan.
 
 ## Aturan Integrasi
 

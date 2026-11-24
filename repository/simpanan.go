@@ -102,8 +102,13 @@ func (r *SimpananRepository) ListByAnggota(idAnggota int64, jenis string) ([]mod
 }
 
 func (r *SimpananRepository) Summary(idAnggota int64) (models.RingkasanSimpanan, error) {
+	return r.SummaryWith(r.db, idAnggota)
+}
+
+// SummaryWith menghitung ringkasan menggunakan koneksi atau transaksi tertentu.
+func (r *SimpananRepository) SummaryWith(db DBTX, idAnggota int64) (models.RingkasanSimpanan, error) {
 	var summary models.RingkasanSimpanan
-	err := r.db.QueryRow(
+	err := db.QueryRow(
 		`SELECT
 			COALESCE(SUM(CASE WHEN jenis = 'Pokok' THEN nominal ELSE 0 END), 0),
 			COALESCE(SUM(CASE WHEN jenis = 'Wajib' THEN nominal ELSE 0 END), 0),
@@ -120,7 +125,7 @@ func (r *SimpananRepository) Summary(idAnggota int64) (models.RingkasanSimpanan,
 		return models.RingkasanSimpanan{}, err
 	}
 
-	err = r.db.QueryRow(
+	err = db.QueryRow(
 		"SELECT COALESCE(SUM(nominal), 0) FROM penarikan_sukarela WHERE id_anggota = ?",
 		idAnggota,
 	).Scan(&summary.TotalPenarikan)

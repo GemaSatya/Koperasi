@@ -20,4 +20,10 @@ var (
 	ErrStatusPinjaman         = errors.New("status pinjaman tidak sesuai untuk proses ini")
 	ErrNominalMelebihiTagihan = errors.New("nominal melebihi total tagihan")
 	ErrLoginGagal             = errors.New("username atau password salah")
+
+	ErrPinjamanTidakDitemukan = errors.New("pinjaman tidak ditemukan")
+	ErrJadwalTidakDitemukan   = errors.New("jadwal angsuran tidak ditemukan")
+	ErrJadwalLunas            = errors.New("jadwal angsuran sudah lunas")
+	ErrTenorTidakValid        = errors.New("tenor harus antara 1 sampai 60 bulan")
+	ErrPeriodeTidakValid      = errors.New("periode laporan tidak valid")
 )

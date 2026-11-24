@@ -50,6 +50,56 @@ func main() {
 	simpananHandler := handler.NewSimpananHandler(simpananService)
 	simpananHandler.RegisterRoutes(mux)
 
+	// Modul pinjaman, pencairan, pembayaran, pelunasan, dan laporan.
+	pinjamanRepository := repository.NewPinjamanRepository(models.DB)
+	jadwalRepository := repository.NewJadwalRepository(models.DB)
+	pembayaranRepository := repository.NewPembayaranRepository(models.DB)
+	pelunasanRepository := repository.NewPelunasanRepository(models.DB)
+	laporanRepository := repository.NewLaporanRepository(models.DB)
+
+	pinjamanService := service.NewPinjamanService(
+		models.DB,
+		pinjamanRepository,
+		simpananRepository,
+		jadwalRepository,
+		cfg,
+	)
+	pinjamanHandler := handler.NewPinjamanHandler(pinjamanService)
+	pinjamanHandler.RegisterRoutes(mux)
+
+	pembayaranService := service.NewPembayaranService(
+		models.DB,
+		pembayaranRepository,
+		jadwalRepository,
+		pinjamanRepository,
+		pelunasanRepository,
+		cfg,
+	)
+	pembayaranHandler := handler.NewPembayaranHandler(pembayaranService)
+	pembayaranHandler.RegisterRoutes(mux)
+
+	pelunasanService := service.NewPelunasanService(
+		models.DB,
+		pelunasanRepository,
+		jadwalRepository,
+		pinjamanRepository,
+		cfg,
+	)
+	pelunasanHandler := handler.NewPelunasanHandler(pelunasanService)
+	pelunasanHandler.RegisterRoutes(mux)
+
+	laporanService := service.NewLaporanService(
+		models.DB,
+		laporanRepository,
+		pinjamanRepository,
+		jadwalRepository,
+		pembayaranRepository,
+		pelunasanRepository,
+		cfg.DendaPersenPerHari,
+	)
+	laporanHandler := handler.NewLaporanHandler(laporanService)
+	laporanHandler.RegisterRoutes(mux)
+
 	server := &http.Server{
 		Addr:    ":" + cfg.AppPort,
 		Handler: middleware.CORS(mux),
