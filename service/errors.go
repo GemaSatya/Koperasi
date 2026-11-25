@@ -24,5 +24,8 @@ var (
 	ErrMelebihiBatas          = errors.New("jumlah pinjaman melebihi batas maksimal")
 	ErrStatusPinjaman         = errors.New("status pinjaman tidak sesuai untuk proses ini")
 	ErrNominalMelebihiTagihan = errors.New("nominal melebihi total tagihan")
+	ErrJadwalTidakDitemukan   = errors.New("jadwal angsuran tidak ditemukan")
+	ErrJadwalLunas            = errors.New("jadwal angsuran sudah lunas")
+	ErrPeriodeTidakValid      = errors.New("periode laporan tidak valid")
 	ErrLoginGagal             = errors.New("username atau password salah")
 )

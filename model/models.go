@@ -167,6 +167,7 @@ type BarisPembayaran struct {
 	Nama         string    `json:"nama"`
 	IDPinjaman   int64     `json:"id_pinjaman"`
 	IDJadwal     int64     `json:"id_jadwal"`
+	AngsuranKe   int       `json:"angsuran_ke"`
 	TotalBayar   int64     `json:"total_bayar"`
 	DendaDibayar int64     `json:"denda_dibayar"`
 	JasaDibayar  int64     `json:"jasa_dibayar"`
@@ -184,6 +185,7 @@ type Tunggakan struct {
 	HariTerlambat int       `json:"hari_terlambat"`
 	SisaPokok     int64     `json:"sisa_pokok"`
 	SisaJasa      int64     `json:"sisa_jasa"`
+	DendaDibayar  int64     `json:"denda_dibayar"`
 	DendaBerjalan int64     `json:"denda_berjalan"`
 }
 
