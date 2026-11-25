@@ -50,6 +50,63 @@ func main() {
 	simpananHandler := handler.NewSimpananHandler(simpananService)
 	simpananHandler.RegisterRoutes(mux)
 
+	pinjamanRepository := repository.NewPinjamanRepository(models.DB)
+	jadwalRepository := repository.NewJadwalRepository(models.DB)
+	pelunasanRepository := repository.NewPelunasanRepository(models.DB)
+	laporanKartuRepository := repository.NewLaporanKartuRepository(models.DB)
+	jadwalReadRepository := repository.NewJadwalReadRepository(models.DB)
+	pembayaranRepository := repository.NewPembayaranRepository(models.DB)
+	laporanRepository := repository.NewLaporanRepository(models.DB)
+
+	pinjamanService := service.NewPinjamanService(
+		models.DB,
+		pinjamanRepository,
+		anggotaRepository,
+		simpananService,
+		cfg,
+	)
+	pencairanService := service.NewPencairanService(
+		models.DB,
+		pinjamanRepository,
+		jadwalRepository,
+	)
+	pelunasanService := service.NewPelunasanService(
+		models.DB,
+		pinjamanRepository,
+		pelunasanRepository,
+		cfg,
+	)
+	laporanKartuService := service.NewLaporanKartuService(
+		models.DB,
+		pinjamanRepository,
+		laporanKartuRepository,
+		pelunasanRepository,
+	)
+	pembayaranService := service.NewPembayaranService(
+		models.DB,
+		jadwalReadRepository,
+		pinjamanRepository,
+		pembayaranRepository,
+		pelunasanRepository,
+		cfg,
+	)
+	laporanService := service.NewLaporanService(laporanRepository, cfg)
+
+	pinjamanHandler := handler.NewPinjamanHandler(pinjamanService, pencairanService)
+	pinjamanHandler.RegisterRoutes(mux)
+
+	pelunasanHandler := handler.NewPelunasanHandler(pelunasanService)
+	pelunasanHandler.RegisterRoutes(mux)
+
+	laporanKartuHandler := handler.NewLaporanKartuHandler(laporanKartuService)
+	laporanKartuHandler.RegisterRoutes(mux)
+
+	pembayaranHandler := handler.NewPembayaranHandler(pembayaranService)
+	pembayaranHandler.RegisterRoutes(mux)
+
+	laporanHandler := handler.NewLaporanHandler(laporanService)
+	laporanHandler.RegisterRoutes(mux)
+
 	server := &http.Server{
 		Addr:    ":" + cfg.AppPort,
 		Handler: middleware.CORS(mux),
