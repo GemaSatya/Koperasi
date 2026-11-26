@@ -2,6 +2,8 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
+	"time"
 
 	models "github.com/GemaSatya/ProjekPemweb/model"
 )
@@ -97,4 +99,49 @@ func scanPelunasan(row pelunasanScanner) (models.Pelunasan, error) {
 		&pelunasan.Total,
 	)
 	return pelunasan, err
+}
+
+const pelunasanKolomTambahan = `id_pelunasan, id_pinjaman, tanggal, sisa_pokok, jasa, administrasi, total`
+
+// GetByPinjaman mengembalikan nil jika pinjaman belum pernah dilunasi.
+func (r *PelunasanRepository) GetByPinjaman(db DBTX, idPinjaman int64) (*models.Pelunasan, error) {
+	pelunasan, err := scanPelunasan(db.QueryRow(
+		`SELECT `+pelunasanKolomTambahan+` FROM pelunasan WHERE id_pinjaman = ?`,
+		idPinjaman,
+	))
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &pelunasan, nil
+}
+
+// ListBetween mengambil pelunasan pada rentang tanggal untuk kebutuhan laporan.
+func (r *PelunasanRepository) ListBetween(dari, sampai time.Time) ([]models.Pelunasan, error) {
+	rows, err := r.db.Query(
+		`SELECT `+pelunasanKolomTambahan+`
+		 FROM pelunasan
+		 WHERE tanggal BETWEEN ? AND ?
+		 ORDER BY tanggal, id_pelunasan`,
+		dari, sampai,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]models.Pelunasan, 0)
+	for rows.Next() {
+		pelunasan, err := scanPelunasan(rows)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, pelunasan)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return result, nil
 }

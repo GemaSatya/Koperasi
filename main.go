@@ -52,7 +52,9 @@ func main() {
 
 	pinjamanRepository := repository.NewPinjamanRepository(models.DB)
 	jadwalRepository := repository.NewJadwalRepository(models.DB)
+	pembayaranRepository := repository.NewPembayaranRepository(models.DB)
 	pelunasanRepository := repository.NewPelunasanRepository(models.DB)
+	laporanRepository := repository.NewLaporanRepository(models.DB)
 	laporanKartuRepository := repository.NewLaporanKartuRepository(models.DB)
 
 	pinjamanService := service.NewPinjamanService(
@@ -83,8 +85,31 @@ func main() {
 	pinjamanHandler := handler.NewPinjamanHandler(pinjamanService, pencairanService)
 	pinjamanHandler.RegisterRoutes(mux)
 
+	pembayaranService := service.NewPembayaranService(
+		models.DB,
+		pembayaranRepository,
+		jadwalRepository,
+		pinjamanRepository,
+		pelunasanRepository,
+		cfg,
+	)
+	pembayaranHandler := handler.NewPembayaranHandler(pembayaranService)
+	pembayaranHandler.RegisterRoutes(mux)
+
 	pelunasanHandler := handler.NewPelunasanHandler(pelunasanService)
 	pelunasanHandler.RegisterRoutes(mux)
+
+	laporanService := service.NewLaporanService(
+		models.DB,
+		laporanRepository,
+		pinjamanRepository,
+		jadwalRepository,
+		pembayaranRepository,
+		pelunasanRepository,
+		cfg.DendaPersenPerHari,
+	)
+	laporanHandler := handler.NewLaporanHandler(laporanService)
+	laporanHandler.RegisterRoutes(mux)
 
 	laporanKartuHandler := handler.NewLaporanKartuHandler(laporanKartuService)
 	laporanKartuHandler.RegisterRoutes(mux)
